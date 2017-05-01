@@ -1,0 +1,257 @@
+" vim: fen:fdm=marker:
+set nocompatible        " no need to be compatible with 'classic' vi
+
+syntax on
+filetype plugin indent on
+syntax enable
+
+execute pathogen#infect()
+
+" {{{ theme-related stuff
+if has("gui_running")
+    colorscheme gruvbox
+    " let g:airline_theme = 'wombat'
+    let g:airline_theme = 'gruvbox'
+    let g:airline_powerline_fonts = 1
+else
+    colorscheme desert
+    let g:airline_theme = 'wombat' " 'molokai'
+endif
+
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
+
+set background=dark
+" }}}
+
+silent! source .vimlocal   " source directory-local config, & fail silently 
+
+" sets and lets {{{
+set guifont=Ubuntu\ Mono\ 12
+set guioptions-=T       " hide the toolbar
+"set guioptions-=m       " hide the menubar
+set mouse=a             " the mouse can be used in all modes
+let mapleader=";"
+set pt=<leader>p        " pastetoggle with ;p
+if has("gui_running")
+    set lines=40        " the number of lines in a display
+endif
+set laststatus=2        " always show a status line
+set backspace=2         " (bs) allow backspacing over everything in insert mode
+set viminfo='20,\"50    " (vi) read/write a .viminfo file, don't store more
+                        " than 20 lines of marks, 50 of registers
+set history=1000        " (hi) keep 100 lines of command line history
+set ruler               " (ru) show the cursor position all the time
+set showcmd             " shows partial commands as typed
+set visualbell          " turn off annoying bell
+set incsearch           " display incremental search results
+"set nohlsearch          " don't highlight found search terms
+set autoindent          " indent each line like the previous one
+set hlsearch            " highlight matches
+set tabstop=4           " (ts) sets tabwidth = 4 spaces
+set softtabstop=4       " (sts) substitute 4 spaces for tabs
+set shiftwidth=4        " (sw) number of spaces for each step of (auto)indent
+set expandtab           " (et) allows use of > to insert spaces for tabs
+set textwidth=78        " (tw) hard limit on line lengths; wrap at 78 columns
+set fillchars:fold:\    " use spaces on folded lines instead of dashes
+set listchars=precedes:~,extends:~,tab:»·,trail:·,eol:┐" use these chars for :set list
+set browsedir=buffer    " open filebrowser in same dir. as edited file
+set showbreak=+         " long lines broken, with a +
+set wildmenu            " a better menu for to tab through
+set encoding=utf8
+set scrolloff=1         " leave a line blw or abv cursor line
+set backupdir=~/.vim/vimbackup,/tmp, " make backups in these dirs
+set runtimepath+=~/.vim/bundle/vim-lion
+if has("vms")
+    set nobackup        " do not keep a backup file, use versions instead
+else
+    " together, the next two lines delete old backup, backup current file
+    set backup          " keep a backup file (restore to previous version)
+    set writebackup     " make a backup before overwriting a file
+    set undofile        " keep an undo file (undo changes after closing)
+    set undodir=~/.vim/tmp.~/.tmp,/var/tmp
+    set directory=~/.vim/tmp,~/.tmp,/var/tmp " swap files go here
+endif
+
+let html_no_rendering=1 " turns off font rendering of HTML
+let treeExplVertical=1  " make vtreeexplorer use a vertical-split
+" }}}
+
+" highlighting {{{
+" italics make comments look good
+if has("gui_running")
+    highlight Comment gui=italic cterm=italic
+endif
+
+" hi Comment guifg=Gray ctermfg=7 " looks good against white
+" hi StatusLine ctermbg=yellow ctermfg=LightBlue
+" hi StatusLineNC ctermfg=gray ctermbg=8
+" hi Delimiter guifg=gray ctermfg=7 " makes scheme and lisp parens nice
+" hi LineNr guifg=gray ctermfg=7
+" }}}
+
+" abbreviations {{{
+iab ydr <C-R>=strftime("%Y-%m-%dT%R%Z")<CR>
+iab teh the
+" }}}
+
+" mappings {{{
+inoremap <CapsLock> <Esc> " make CapsLock act as Escape
+" Don't use Ex mode, use Q
+nnoremap Q gq
+nnoremap <S-J> {Q}
+" heretical Emacs-like keybindings for insert-mode
+inoremap <C-E> <Esc>$i<Right>
+inoremap <C-A> <Esc>^i
+inoremap <C-W> <Esc>dbxi
+""imap <C-S-K> <Esc><Right>d$a
+""imap <C-U> <Esc><Space>d^i<Left>
+""" and others
+inoremap <C-J> <Down>
+inoremap <C-K> <Up>
+inoremap <C-H> <Left>
+inoremap <C-L> <Right>
+"imap <C-D> <Esc><Right>d$a " Ctrl-d -> delete-to-EOL
+"imap <A-U> <Esc>ui " Alt-u -> Undo 
+nnoremap ZW :w<CR>
+nnoremap <leader>s :noh<CR>
+" }}}
+
+" begin auto-close stuff {{{
+" this function and the next are re autoclosing parens, braces, etc.
+"function! BC_AddChar(schar)
+"    if exists("b:robstack")
+"        let b:robstack = b:robstack . a:schar
+"    else
+"        let b:robstack = a:schar
+"    endif
+"endfunction
+"
+"function! BC_GetChar()
+"    let l:char = b:robstack[strlen(b:robstack)-1]
+"    let b:robstack = strpart(b:robstack, 0, strlen(b:robstack)-1)
+"    return l:char
+"endfunction 
+"
+"""inoremap ( ()<esc>:call BC_AddChar(")")<cr>i
+"inoremap { {}<esc>:call BC_AddChar("}")<cr>i
+"inoremap [ []<esc>:call BC_AddChar("]")<cr>i
+"inoremap " ""<esc>:call BC_AddChar("\"")<cr>i
+"inoremap < <><esc>:call BC_AddChar(">")<cr>i
+"" jump out of parenthesis
+"inoremap <C-j> <esc>:call search(BC_GetChar(), "W")<cr>a
+" end autoclose stuff }}}
+
+
+" tvo-related stuff {{{
+" defaults:
+" let otl_install_menu=1
+" let no_otl_maps=0
+" let no_otl_insert_maps=1
+" overrides:
+" let otl_bold_headers=0
+" let otl_use_thlnk=0
+" au BufWinLeave *.otl mkview
+" au BufWinEnter *.otl silent loadview
+" let maplocalleader = ","
+" end of tvo-related stuff
+"}}}
+
+" Make p in Visual mode replace the selected text with the "" register.
+vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
+
+" autocommand stuff {{{
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+    augroup configgroup
+        autocmd!
+        autocmd VimEnter * highlight clear SignColumn
+        "autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
+                    "\:call <SID>StripTrailingWhitespaces()
+
+        autocmd FileType python setlocal commentstring=#\ %s
+        autocmd BufEnter Makefile setlocal noexpandtab
+    augroup END
+endif
+
+"     " In text files, always limit the width of text to 72 characters
+"     autocmd BufRead *.txt set tw=72
+" 
+" 
+"     augroup cprog
+"         " Remove all cprog autocommands
+"         au!
+" 
+"         " When starting to edit a file:
+"         "   For C and C++ files set formatting of comments and set C-indenting
+"         "   on.
+"         "   For other files switch it off.
+"         "   Don't change the order, it's important that 
+"         "   the line with * comes first.
+"         autocmd FileType *      set formatoptions=tcql nocindent comments&
+"         autocmd FileType c,cpp  set formatoptions=jtcroql nocindent comments=sr:/*,mb:*,el:*/,://
+"         ""autocmd inoremap { <cr>{<cr><tab><cr>}<esc>:call BC_AddChar("}")<cr><esc>kA
+"         autocmd FileType otl    set formatoptions=croql comments=b::
+"     augroup END
+" 
+"     augroup gzip
+"          " Remove all gzip autocommands
+"          au!
+" 
+"          " Enable editing of gzipped files
+"          "   read: set binary mode before reading the file
+"          "   uncompress text in buffer after reading
+"          "  write: compress file after writing
+"          " append: uncompress file, append, compress file
+"          autocmd BufReadPre,FileReadPre  *.gz set bin
+"          autocmd BufReadPost,FileReadPost  *.gz let ch_save = &ch|set ch=2
+"          autocmd BufReadPost,FileReadPost  *.gz '[,']!gunzip
+"          autocmd BufReadPost,FileReadPost  *.gz set nobin
+"          autocmd BufReadPost,FileReadPost  *.gz let &ch = ch_save|unlet ch_save
+"          autocmd BufReadPost,FileReadPost  *.gz execute ":doautocmd BufReadPost " . expand("%:r")
+" 
+"          autocmd BufWritePost,FileWritePost  *.gz !mv <afile> <afile>:r
+"          autocmd BufWritePost,FileWritePost  *.gz !gzip <afile>:r
+" 
+"          autocmd FileAppendPre     *.gz !gunzip <afile>
+"          autocmd FileAppendPre     *.gz !mv <afile>:r <afile>
+"          autocmd FileAppendPost    *.gz !mv <afile> <afile>:r
+"          autocmd FileAppendPost    *.gz !gzip <afile>:r
+"     augroup END
+" 
+"     augroup bz2
+"          " Remove all bz2 autocommands
+"          au!
+" 
+"          " Enable editing of bzipped files
+"          "   read: set binary mode before reading the file
+"          "   uncompress text in buffer after reading
+"          "  write: compress file after writing
+"          " append: uncompress file, append, compress file
+"          autocmd BufReadPre,FileReadPre  *.bz2 set bin
+"          autocmd BufReadPost,FileReadPost  *.bz2 let ch_save = &ch|set ch=2
+"          autocmd BufReadPost,FileReadPost  *.bz2 '[,']!bunzip2
+"          autocmd BufReadPost,FileReadPost  *.bz2 set nobin
+"          autocmd BufReadPost,FileReadPost  *.bz2 let &ch = ch_save|unlet ch_save
+"          autocmd BufReadPost,FileReadPost  *.bz2 execute ":doautocmd BufReadPost " . expand("%:r")
+" 
+"          autocmd BufWritePost,FileWritePost  *.bz2 !mv <afile> <afile>:r
+"          autocmd BufWritePost,FileWritePost  *.bz2 !bzip2 <afile>:r
+" 
+"          autocmd FileAppendPre     *.bz2 !bunzip2 <afile>
+"          autocmd FileAppendPre     *.bz2 !mv <afile>:r <afile>
+"          autocmd FileAppendPost    *.bz2 !mv <afile> <afile>:r
+"          autocmd FileAppendPost    *.bz2 !bzip2 <afile>:r
+"     augroup END
+" 
+"     " This is disabled, because it changes the jumplist.  Can't use CTRL-O to
+"     "go back to positions in previous files more than once.
+"     if 0
+"         " When editing a file, always jump to the last cursor position.
+"         " This must be after the uncompress commands.
+"         autocmd BufReadPost * if line("'\"") && line("'\"") <= line("$") | exe "normal `\"" | endif
+"     endif
+" 
+"}}}
